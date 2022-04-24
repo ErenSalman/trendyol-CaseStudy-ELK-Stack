@@ -1,0 +1,30 @@
+---
+# import vars
+- include_vars: "main.yml"
+
+# install sw
+- include: install_sw_RHEL.yaml
+  when: ansible_os_family == "RedHat"
+
+# - include: install_sw_debian.yaml
+#   when: ansible_os_family == "Debian"
+
+#configure
+- include: move_ssl_certs.yaml
+  when: ssl_on|bool
+
+- include: configure_elastic.yaml
+  when: inventory_hostname in groups['ElasticsearchMasters'] or inventory_hostname in groups['ElasticsearchDataNodes']
+
+- include: configure_kibana.yaml
+  when: inventory_hostname in groups['Kibana']
+
+# - include: configure_beats.yaml
+
+# - include: configure_logstash.yaml
+#   when: inventory_hostname in groups['Logstash']
+
+# - include: configure_curator.yaml
+#   when: inventory_hostname in groups['ElasticsearchMasters'] or inventory_hostname in groups['ElasticsearchDataNodes']
+
+- include: restart_services.yaml
